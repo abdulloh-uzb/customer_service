@@ -92,6 +92,37 @@ func (c *CustomerService) GetCustomerList(ctx context.Context, req *pbc.Empty) (
 		return &pbc.CustomerListResponse{}, err
 	}
 
+	for _, cust := range customers.Customers {
+		rankings, err := c.client.Ranking().GetRankingsByCustomerId(ctx, &pbr.Id{Id: cust.Id})
+		if err != nil {
+			return &pbc.CustomerListResponse{}, err
+		}
+
+		for _, r := range rankings.Rankings {
+			cust.Rankings = append(cust.Rankings, &pbc.Ranking{
+				Name:        r.Name,
+				Description: r.Description,
+				Ranking:     r.Ranking,
+				PostId:      r.PostId,
+				CustomerId:  r.CustomerId,
+			})
+		}
+
+		posts, err := c.client.Post().GetPostByCustomerId(ctx, &pbp.Id{Id: cust.Id})
+		if err != nil {
+			return &pbc.CustomerListResponse{}, err
+		}
+
+		for _, p := range posts.Posts {
+			cust.Posts = append(cust.Posts, &pbc.Post{
+				Name:        p.Name,
+				Description: p.Description,
+				CustomerId:  p.CustomerId,
+			})
+		}
+
+	}
+
 	return customers, nil
 }
 
@@ -103,3 +134,4 @@ func (c *CustomerService) UpdateCustomer(ctx context.Context, req *pbc.Customer)
 	}
 	return customer, nil
 }
+																	

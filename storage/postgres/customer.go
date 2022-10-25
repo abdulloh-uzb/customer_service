@@ -44,7 +44,6 @@ func (cr *customerRepo) Create(req *pbc.CustomerRequest) (*pbc.Customer, error) 
 }
 
 func (cr *customerRepo) GetCustomer(id int) (*pbc.Customer, error) {
-	fmt.Println("ishladi")
 
 	customerResp := &pbc.Customer{}
 	err := cr.db.QueryRow(`select id, first_name, last_name, bio, email, phone_number, created_at from customers where id=$1`, id).
