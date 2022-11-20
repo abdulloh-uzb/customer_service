@@ -11,7 +11,7 @@ proto-gen:
 lint: ## Run golangci-lint with printing to stdout
 	golangci-lint -c .golangci.yaml run --build-tags "musl" ./...
 migrate_up:
-	migrate -source file://migrations -database postgres://postgres:1234@localhost:5432/exam up
+	migrate -source file://migrations -database postgres://postgres:1234@dbcustomer:5433/customerdb up
 
 migrate_down:
 	migrate -source file://migrations -database postgres://postgres:1234@localhost:5432/exam down
