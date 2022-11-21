@@ -34,10 +34,10 @@ func Load() Config {
 	c.LogLevel = cast.ToString(getOrReturnDefault("LOG_LEVEL", "debug"))
 	c.RPCPort = cast.ToString(getOrReturnDefault("RPC_PORT", ":9000"))
 
-	c.PostServiceHost = cast.ToString(getOrReturnDefault("PRODUCT_HOST", "localhost"))
+	c.PostServiceHost = cast.ToString(getOrReturnDefault("PRODUCT_HOST", "post_service"))
 	c.PostServicePort = cast.ToInt(getOrReturnDefault("PRODUCT_PORT", 8000))
 
-	c.RankingServiceHost = cast.ToString(getOrReturnDefault("PRODUCT_HOST", "localhost"))
+	c.RankingServiceHost = cast.ToString(getOrReturnDefault("PRODUCT_HOST", "reyting_service"))
 	c.RankingServicePort = cast.ToInt(getOrReturnDefault("PRODUCT_PORT", 1111))
 	return c
 }
