@@ -2,12 +2,13 @@ package service
 
 import (
 	"context"
-	pbc "customer_service/genproto/customer"
-	pbp "customer_service/genproto/post"
-	pbr "customer_service/genproto/reyting"
-	l "customer_service/pkg/logger"
-	"customer_service/service/grpcClient"
-	"customer_service/storage"
+	pbc "exam/customer_service/genproto/customer"
+	pbp "exam/customer_service/genproto/post"
+	pbr "exam/customer_service/genproto/reyting"
+	l "exam/customer_service/pkg/logger"
+	"exam/customer_service/service/grpcClient"
+	"exam/customer_service/storage"
+	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc/codes"
@@ -29,7 +30,9 @@ func NewCustomerService(db *sqlx.DB, log l.Logger, client grpcClient.GrpcClientI
 }
 
 func (c *CustomerService) Create(ctx context.Context, req *pbc.CustomerRequest) (*pbc.Customer, error) {
+	fmt.Println("servisdagi createga kirdi")
 	customer, err := c.storage.Customer().Create(req)
+	fmt.Println("servisdagi createda error bor ekan: ", err)
 	if err != nil {
 		c.logger.Error("error while create customer", l.Error(err))
 		return &pbc.Customer{}, err
@@ -134,4 +137,3 @@ func (c *CustomerService) UpdateCustomer(ctx context.Context, req *pbc.Customer)
 	}
 	return customer, nil
 }
-																	

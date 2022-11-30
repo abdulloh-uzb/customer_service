@@ -1,8 +1,8 @@
 package storage
 
 import (
-	"customer_service/storage/postgres"
-	"customer_service/storage/repo"
+	"exam/customer_service/storage/postgres"
+	"exam/customer_service/storage/repo"
 
 	"github.com/jmoiron/sqlx"
 )

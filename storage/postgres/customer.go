@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	pbc "customer_service/genproto/customer"
+	pbc "exam/customer_service/genproto/customer"
 	"fmt"
 	"time"
 
@@ -18,7 +18,7 @@ func NewCustomerRepo(db *sqlx.DB) *customerRepo {
 
 func (cr *customerRepo) Create(req *pbc.CustomerRequest) (*pbc.Customer, error) {
 	customerResp := &pbc.Customer{}
-
+	fmt.Println("createga kirdi")
 	err := cr.db.QueryRow(`
 		INSERT INTO 
 		customers(first_name, last_name, bio, email, phone_number)
@@ -26,31 +26,35 @@ func (cr *customerRepo) Create(req *pbc.CustomerRequest) (*pbc.Customer, error) 
 		returning id, first_name, last_name, bio, email, phone_number
 		`, req.FirstName, req.LastName, req.Bio, req.Email, req.PhoneNumber).
 		Scan(&customerResp.Id, &customerResp.FirstName, &customerResp.LastName, &customerResp.Bio, &customerResp.Email, &customerResp.PhoneNumber)
+	fmt.Println(err)
+
 	if err != nil {
 		return &pbc.Customer{}, err
 	}
-
-	for _, address := range req.Addresses {
-		addressResp := &pbc.Address{}
-		err := cr.db.QueryRow(`INSERT INTO addresses(street, district, customer_id) values($1,$2,$3) returning id, street, district`, address.Street, address.District, customerResp.Id).
-			Scan(&addressResp.Id, &addressResp.Street, &addressResp.District)
-		if err != nil {
-			return &pbc.Customer{}, err
-		}
-		customerResp.Addresses = append(customerResp.Addresses, addressResp)
-	}
+	fmt.Println(err)
+	// for _, address := range req.Addresses {
+	// 	addressResp := &pbc.Address{}
+	// 	err := cr.db.QueryRow(`INSERT INTO addresses(street, district, customer_id) values($1,$2,$3) returning id, street, district`, address.Street, address.District, customerResp.Id).
+	// 		Scan(&addressResp.Id, &addressResp.Street, &addressResp.District)
+	// 	if err != nil {
+	// 		return &pbc.Customer{}, err
+	// 	}
+	// 	customerResp.Addresses = append(customerResp.Addresses, addressResp)
+	// }
 
 	return customerResp, nil
 }
 
 func (cr *customerRepo) GetCustomer(id int) (*pbc.Customer, error) {
-
+	fmt.Println(id)
 	customerResp := &pbc.Customer{}
+
 	err := cr.db.QueryRow(`select id, first_name, last_name, bio, email, phone_number, created_at from customers where id=$1`, id).
 		Scan(&customerResp.Id, &customerResp.FirstName, &customerResp.LastName, &customerResp.Bio, &customerResp.Email, &customerResp.PhoneNumber, &customerResp.CreatedAt)
 	if err != nil {
 		return &pbc.Customer{}, err
 	}
+	fmt.Println(err)
 
 	return customerResp, nil
 }

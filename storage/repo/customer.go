@@ -1,7 +1,7 @@
 package repo
 
 import (
-	pbc "customer_service/genproto/customer"
+	pbc "exam/customer_service/genproto/customer"
 )
 
 type CustomerStorageI interface {

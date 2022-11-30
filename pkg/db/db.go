@@ -1,8 +1,8 @@
 package db
 
 import (
+	"exam/customer_service/config"
 	"fmt"
-	"customer_service/config"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"

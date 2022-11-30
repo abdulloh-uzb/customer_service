@@ -1,9 +1,9 @@
 package grpcClient
 
 import (
-	"customer_service/config"
-	pbp "customer_service/genproto/post"
-	pbr "customer_service/genproto/reyting"
+	"exam/customer_service/config"
+	pbp "exam/customer_service/genproto/post"
+	pbr "exam/customer_service/genproto/reyting"
 	"fmt"
 
 	"google.golang.org/grpc"

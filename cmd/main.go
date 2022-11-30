@@ -1,12 +1,13 @@
 package main
 
 import (
-	"customer_service/config"
-	pbc "customer_service/genproto/customer"
-	"customer_service/pkg/db"
-	"customer_service/pkg/logger"
-	"customer_service/service"
-	"customer_service/service/grpcClient"
+	"exam/customer_service/config"
+	pbc "exam/customer_service/genproto/customer"
+	"exam/customer_service/pkg/db"
+	"exam/customer_service/pkg/logger"
+	"exam/customer_service/service"
+	"exam/customer_service/service/grpcClient"
+	"fmt"
 	"net"
 
 	"google.golang.org/grpc"
@@ -14,6 +15,7 @@ import (
 )
 
 func main() {
+	fmt.Println("customer mainga kirdi")
 	cfg := config.Load()
 	log := logger.New(cfg.LogLevel, "template-service")
 	defer logger.Cleanup(log)
