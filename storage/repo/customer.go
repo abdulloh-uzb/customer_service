@@ -10,4 +10,5 @@ type CustomerStorageI interface {
 	DeleteCustomer(id int) error
 	GetCustomerList() (*pbc.CustomerListResponse, error)
 	UpdateCustomer(*pbc.Customer) (*pbc.Customer, error)
+	CheckField(*pbc.CheckFieldReq) (*pbc.CheckFieldRes, error)
 }

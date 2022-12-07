@@ -42,7 +42,7 @@ func (c *CustomerService) Create(ctx context.Context, req *pbc.CustomerRequest) 
 
 func (c *CustomerService) GetCustomer(ctx context.Context, req *pbc.CustomerId) (*pbc.Customer, error) {
 	customer, err := c.storage.Customer().GetCustomer(int(req.Id))
-
+	fmt.Println(req.Id, "getcustomer working")
 	if err != nil {
 		c.logger.Error("error while create customer", l.Error(err))
 		return &pbc.Customer{}, status.Error(codes.Internal, "something went wrong, please check get costumer")
@@ -71,7 +71,6 @@ func (c *CustomerService) GetCustomer(ctx context.Context, req *pbc.CustomerId) 
 		customer.Posts = append(customer.Posts, &pbc.Post{
 			Name:        p.Name,
 			Description: p.Description,
-			CustomerId:  p.CustomerId,
 		})
 	}
 
@@ -120,7 +119,6 @@ func (c *CustomerService) GetCustomerList(ctx context.Context, req *pbc.Empty) (
 			cust.Posts = append(cust.Posts, &pbc.Post{
 				Name:        p.Name,
 				Description: p.Description,
-				CustomerId:  p.CustomerId,
 			})
 		}
 
@@ -136,4 +134,23 @@ func (c *CustomerService) UpdateCustomer(ctx context.Context, req *pbc.Customer)
 		return &pbc.Customer{}, err
 	}
 	return customer, nil
+}
+
+func (c *CustomerService) GetByUsername(ctx context.Context, req *pbc.ByUsername) (*pbc.Customer, error) {
+	// customer, err := c.storage.Customer().UpdateCustomer(req)
+	// if err != nil {
+	// 	c.logger.Error("error while update customer", l.Error(err))
+	// 	return &pbc.Customer{}, err
+	// }
+	return &pbc.Customer{}, nil
+}
+
+func (c *CustomerService) CheckField(ctx context.Context, req *pbc.CheckFieldReq) (*pbc.CheckFieldRes, error) {
+	res, err := c.storage.Customer().CheckField(req)
+	fmt.Println(res, "1")
+	if err != nil {
+		c.logger.Error("error while checkfiel", l.Error(err))
+		return &pbc.CheckFieldRes{}, err
+	}
+	return res, nil
 }

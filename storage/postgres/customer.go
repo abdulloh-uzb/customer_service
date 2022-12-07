@@ -116,3 +116,25 @@ func (cr *customerRepo) UpdateCustomer(req *pbc.Customer) (*pbc.Customer, error)
 
 	return customer, nil
 }
+
+func (cr *customerRepo) CheckField(req *pbc.CheckFieldReq) (*pbc.CheckFieldRes, error) {
+	fmt.Println("req: ", req)
+	query := fmt.Sprintf("SELECT 1 FROM customers WHERE %s=$1", req.Field)
+	res := &pbc.CheckFieldRes{}
+	temp := 0
+	err := cr.db.QueryRow(query, req.Value).Scan(&temp)
+	fmt.Println("temp: ", temp)
+	if err != nil {
+		res.Exists = false
+		return res, nil
+	}
+
+	if temp == 1 {
+		res.Exists = true
+	} else {
+		res.Exists = false
+	}
+	fmt.Println("res:", res.Exists)
+	return res, nil
+
+}
