@@ -34,6 +34,9 @@ func (c *CustomerService) Create(ctx context.Context, req *pbc.CustomerRequest) 
 		c.logger.Error("error while create customer", l.Error(err))
 		return &pbc.Customer{}, err
 	}
+	// c.producer.ProducerCreate(&pbc.CustomerRequest{
+	// 	Email: req.Email,
+	// })
 	return customer, nil
 }
 

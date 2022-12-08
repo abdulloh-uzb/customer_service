@@ -5,4 +5,4 @@ WORKDIR /customer
 RUN go mod vendor
 RUN go build -o main cmd/main.go
 CMD ./main
-EXPOSE 9000
+EXPOSE 8002
