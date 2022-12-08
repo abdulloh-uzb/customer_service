@@ -8,7 +8,6 @@ import (
 	l "exam/customer_service/pkg/logger"
 	"exam/customer_service/service/grpcClient"
 	"exam/customer_service/storage"
-	"fmt"
 
 	"github.com/jmoiron/sqlx"
 	"google.golang.org/grpc/codes"
@@ -30,9 +29,7 @@ func NewCustomerService(db *sqlx.DB, log l.Logger, client grpcClient.GrpcClientI
 }
 
 func (c *CustomerService) Create(ctx context.Context, req *pbc.CustomerRequest) (*pbc.Customer, error) {
-	fmt.Println("servisdagi createga kirdi")
 	customer, err := c.storage.Customer().Create(req)
-	fmt.Println("servisdagi createda error bor ekan: ", err)
 	if err != nil {
 		c.logger.Error("error while create customer", l.Error(err))
 		return &pbc.Customer{}, err
@@ -42,7 +39,6 @@ func (c *CustomerService) Create(ctx context.Context, req *pbc.CustomerRequest) 
 
 func (c *CustomerService) GetCustomer(ctx context.Context, req *pbc.CustomerId) (*pbc.Customer, error) {
 	customer, err := c.storage.Customer().GetCustomer(int(req.Id))
-	fmt.Println(req.Id, "getcustomer working")
 	if err != nil {
 		c.logger.Error("error while create customer", l.Error(err))
 		return &pbc.Customer{}, status.Error(codes.Internal, "something went wrong, please check get costumer")
@@ -81,7 +77,18 @@ func (c *CustomerService) DeleteCustomer(ctx context.Context, req *pbc.CustomerI
 
 	err := c.storage.Customer().DeleteCustomer(int(req.Id))
 	if err != nil {
-		c.logger.Error("error while create customer", l.Error(err))
+		c.logger.Error("error while delete customer", l.Error(err))
+		return &pbc.Empty{}, err
+	}
+	_, err = c.client.Post().DeleteByCustomerId(ctx, &pbp.Id{Id: req.Id})
+	if err != nil {
+		c.logger.Error("error while delete post by customer id", l.Error(err))
+		return &pbc.Empty{}, err
+	}
+
+	_, err = c.client.Ranking().DeleteRankingByCustomerId(ctx, &pbr.Id{Id: req.Id})
+	if err != nil {
+		c.logger.Error("error while delete ranking by customer id", l.Error(err))
 		return &pbc.Empty{}, err
 	}
 	return &pbc.Empty{}, nil
@@ -147,10 +154,29 @@ func (c *CustomerService) GetByUsername(ctx context.Context, req *pbc.ByUsername
 
 func (c *CustomerService) CheckField(ctx context.Context, req *pbc.CheckFieldReq) (*pbc.CheckFieldRes, error) {
 	res, err := c.storage.Customer().CheckField(req)
-	fmt.Println(res, "1")
 	if err != nil {
 		c.logger.Error("error while checkfiel", l.Error(err))
 		return &pbc.CheckFieldRes{}, err
+	}
+
+	return res, nil
+
+}
+
+func (c *CustomerService) GetByEmail(ctx context.Context, req *pbc.LoginReq) (*pbc.Customer, error) {
+	res, err := c.storage.Customer().GetByEmail(req)
+	if err != nil {
+		c.logger.Error("error while get", l.Error(err))
+		return &pbc.Customer{}, err
+	}
+	return res, nil
+}
+
+func (c *CustomerService) GetAdminByEmail(ctx context.Context, req *pbc.GetAdminReq) (*pbc.Admin, error) {
+	res, err := c.storage.Customer().GetAdminByEmail(req)
+	if err != nil {
+		c.logger.Error("error while get admin info by email", l.Error(err))
+		return &pbc.Admin{}, err
 	}
 	return res, nil
 }

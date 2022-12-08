@@ -1,1 +1,1 @@
-DROP TABLE if exists addresses;
+DROP TABLE if exists customers;

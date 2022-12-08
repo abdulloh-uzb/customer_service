@@ -18,29 +18,28 @@ func NewCustomerRepo(db *sqlx.DB) *customerRepo {
 
 func (cr *customerRepo) Create(req *pbc.CustomerRequest) (*pbc.Customer, error) {
 	customerResp := &pbc.Customer{}
-	fmt.Println("createga kirdi")
 	err := cr.db.QueryRow(`
 		INSERT INTO 
-		customers(first_name, last_name, bio, email, phone_number)
-		values($1,$2,$3,$4,$5)
-		returning id, first_name, last_name, bio, email, phone_number
-		`, req.FirstName, req.LastName, req.Bio, req.Email, req.PhoneNumber).
-		Scan(&customerResp.Id, &customerResp.FirstName, &customerResp.LastName, &customerResp.Bio, &customerResp.Email, &customerResp.PhoneNumber)
+		customers(first_name, last_name, bio, email, phone_number, refresh_token, password)
+		values($1,$2,$3,$4,$5,$6, $7)
+		returning id, first_name, last_name, bio, email, phone_number, refresh_token, password
+		`, req.FirstName, req.LastName, req.Bio, req.Email, req.PhoneNumber, req.RefreshToken, req.Password).
+		Scan(&customerResp.Id, &customerResp.FirstName, &customerResp.LastName, &customerResp.Bio, &customerResp.Email, &customerResp.PhoneNumber, &customerResp.RefreshToken, &customerResp.Password)
 	fmt.Println(err)
 
 	if err != nil {
 		return &pbc.Customer{}, err
 	}
 	fmt.Println(err)
-	// for _, address := range req.Addresses {
-	// 	addressResp := &pbc.Address{}
-	// 	err := cr.db.QueryRow(`INSERT INTO addresses(street, district, customer_id) values($1,$2,$3) returning id, street, district`, address.Street, address.District, customerResp.Id).
-	// 		Scan(&addressResp.Id, &addressResp.Street, &addressResp.District)
-	// 	if err != nil {
-	// 		return &pbc.Customer{}, err
-	// 	}
-	// 	customerResp.Addresses = append(customerResp.Addresses, addressResp)
-	// }
+	for _, address := range req.Addresses {
+		addressResp := &pbc.Address{}
+		err := cr.db.QueryRow(`INSERT INTO addresses(street, district, customer_id) values($1,$2,$3) returning id, street, district`, address.Street, address.District, customerResp.Id).
+			Scan(&addressResp.Id, &addressResp.Street, &addressResp.District)
+		if err != nil {
+			return &pbc.Customer{}, err
+		}
+		customerResp.Addresses = append(customerResp.Addresses, addressResp)
+	}
 
 	return customerResp, nil
 }
@@ -121,7 +120,7 @@ func (cr *customerRepo) CheckField(req *pbc.CheckFieldReq) (*pbc.CheckFieldRes, 
 	fmt.Println("req: ", req)
 	query := fmt.Sprintf("SELECT 1 FROM customers WHERE %s=$1", req.Field)
 	res := &pbc.CheckFieldRes{}
-	temp := 0
+	temp := -1
 	err := cr.db.QueryRow(query, req.Value).Scan(&temp)
 	fmt.Println("temp: ", temp)
 	if err != nil {
@@ -137,4 +136,36 @@ func (cr *customerRepo) CheckField(req *pbc.CheckFieldReq) (*pbc.CheckFieldRes, 
 	fmt.Println("res:", res.Exists)
 	return res, nil
 
+}
+
+func (cr *customerRepo) GetByEmail(req *pbc.LoginReq) (*pbc.Customer, error) {
+	customerResp := &pbc.Customer{}
+
+	err := cr.db.QueryRow(`select id, first_name, last_name, bio, email, phone_number, created_at, refresh_token, password from customers where email=$1`, req.Email).
+		Scan(&customerResp.Id,
+			&customerResp.FirstName,
+			&customerResp.LastName,
+			&customerResp.Bio,
+			&customerResp.Email,
+			&customerResp.PhoneNumber,
+			&customerResp.CreatedAt,
+			&customerResp.RefreshToken,
+			&customerResp.Password)
+	if err != nil {
+		return &pbc.Customer{}, err
+	}
+	fmt.Println(err)
+
+	return customerResp, nil
+}
+
+func (cr *customerRepo) GetAdminByEmail(req *pbc.GetAdminReq) (*pbc.Admin, error) {
+	res := &pbc.Admin{}
+	err := cr.db.QueryRow("SELECT id, email, username, password FROM admins WHERE email = $1 AND password=$2", req.Email, req.Password).
+		Scan(&res.Id, &res.Email, &res.Username, &res.Password)
+	if err != nil {
+		fmt.Println(err)
+		return &pbc.Admin{}, err
+	}
+	return res, nil
 }
