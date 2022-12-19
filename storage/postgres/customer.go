@@ -25,7 +25,6 @@ func (cr *customerRepo) Create(req *pbc.CustomerRequest) (*pbc.Customer, error) 
 		returning id, first_name, last_name, bio, email, phone_number, refresh_token, password
 		`, req.FirstName, req.LastName, req.Bio, req.Email, req.PhoneNumber, req.RefreshToken, req.Password).
 		Scan(&customerResp.Id, &customerResp.FirstName, &customerResp.LastName, &customerResp.Bio, &customerResp.Email, &customerResp.PhoneNumber, &customerResp.RefreshToken, &customerResp.Password)
-	fmt.Println(err)
 
 	if err != nil {
 		return &pbc.Customer{}, err
@@ -48,7 +47,7 @@ func (cr *customerRepo) GetCustomer(id int) (*pbc.Customer, error) {
 	fmt.Println(id)
 	customerResp := &pbc.Customer{}
 
-	err := cr.db.QueryRow(`select id, first_name, last_name, bio, email, phone_number, created_at from customers where id=$1`, id).
+	err := cr.db.QueryRow(`select id, first_name, last_name, bio, email, phone_number, created_at from customers where id=$1 and deleted_at is null`, id).
 		Scan(&customerResp.Id, &customerResp.FirstName, &customerResp.LastName, &customerResp.Bio, &customerResp.Email, &customerResp.PhoneNumber, &customerResp.CreatedAt)
 	if err != nil {
 		return &pbc.Customer{}, err
@@ -90,7 +89,7 @@ func (cr *customerRepo) UpdateCustomer(req *pbc.Customer) (*pbc.Customer, error)
 		update customers 
 		set 
 		first_name=$1, last_name=$2, bio=$3, email=$4, phone_number=$5, updated_at=$6 
-		where id=$7
+		where id=$7 and deleted_at is null
 		returning id, first_name, last_name, bio, email, phone_number, created_at, updated_at, deletet_at`,
 		req.FirstName, req.LastName, req.Bio, req.Email, req.PhoneNumber, time.Now(), req.Id).
 		Scan(&customer.Id, &customer.FirstName, &customer.LastName, &customer.Bio, &customer.Email, &customer.PhoneNumber, &customer.CreatedAt, &customer.UpdatedAt, &customer.DeletedAt)

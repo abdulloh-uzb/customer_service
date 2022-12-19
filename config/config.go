@@ -37,10 +37,10 @@ func Load() Config {
 	c.LogLevel = cast.ToString(getOrReturnDefault("LOG_LEVEL", "debug"))
 	c.RPCPort = cast.ToString(getOrReturnDefault("RPC_PORT", ":8002"))
 
-	c.PostServiceHost = cast.ToString(getOrReturnDefault("POST_SERVICE_HOST", "localhost"))
+	c.PostServiceHost = cast.ToString(getOrReturnDefault("POST_SERVICE_HOST", "post-service"))
 	c.PostServicePort = cast.ToInt(getOrReturnDefault("POST_SERVICE_PORT", 8000))
 
-	c.RankingServiceHost = cast.ToString(getOrReturnDefault("RANKING_SERVICE_HOST", "localhost"))
+	c.RankingServiceHost = cast.ToString(getOrReturnDefault("RANKING_SERVICE_HOST", "review-service"))
 	c.RankingServicePort = cast.ToInt(getOrReturnDefault("RANKING_SERVICE_HOST", 1111))
 
 	c.KafkaHost = cast.ToString(getOrReturnDefault("KAFKA_HOST", "kafka"))
